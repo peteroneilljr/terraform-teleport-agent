@@ -1,77 +1,213 @@
-# teleport-demos
-Creating Demos of Teleport features
+# Examples
 
-## Configure Teleport resources
 
-1. Create `terraform.tfvars`
-
-```
-teleport_proxy_address = "example.teleport.sh"
-teleport_identity_path = "/home/identity"
-teleport_user          = "user@goteleport.com"
-ssh_key_name           = "demo-se-key"
-teleport_version       = "16.2.0"
-teleport_cdn_link      = "https://cdn.teleport.dev/install-v16.2.0.sh"
-github_client_secret   = "thisclientsecret"
-github_client_id       = "thisclientid"
-github_org             = "this-org"
-aws_region             = "us-west-2"
-aws_account_id         = "1234567890"
-aws_teleport_profile   = "teleport-roles-anywhere"
-aws_tags  = {
-      "teleport.dev/creator" = "user@goteleport.com"
-      "team"                 = "solutions engineering"
-      "purpose"              = "demo"
-      "Name"                 = "User SE Demo"
-    }
-```
-
-2. Enable Teleport resources to be created
-
-Resources set to true will be created in the cluster specified in the Teleport Cluster
+## AWS Cloud Access
 ```hcl
-locals {
-  teleport = {
-    ssh            = true
-    rdp            = false
-    aws            = true
-    rds            = true
-    auto_discovery = false
+module "teleport_aws" {
+  source = "github.com/peteroneilljr/terraform-teleport-node"
+
+  create = local.teleport.aws
+
+  cloud = "AWS"
+
+  aws_vpc_id            = module.vpc.vpc_id
+  aws_security_group_id = module.vpc.default_security_group_id
+  aws_subnet_id         = module.vpc.private_subnets[0]
+
+  teleport_agent_roles = ["App"]
+
+  teleport_proxy_address = var.teleport_proxy_address
+  teleport_version       = var.teleport_version
+  teleport_ssh_labels = {
+    "type" = "agent"
+  }
+
+  aws_key_pair         = aws_key_pair.peter.id
+  aws_instance_profile = aws_iam_instance_profile.console_access.name
+
+  agent_nodename = "aws-agent"
+
+  teleport_aws_apps = {
+    "awsconsole" = {
+      "uri" = "https://console.aws.amazon.com/"
+      "labels" = {
+        "cloud" = "aws"
+        "env"   = "dev"
+      }
+    }
+    "awsconsole-admin" = {
+      "uri" = "https://console.aws.amazon.com/"
+      "labels" = {
+        "cloud" = "aws"
+        "env"   = "prod"
+      }
+    }
+  }
+
+}
+```
+
+## GCP CLI Access
+
+```hcl
+module "teleport_gcp" {
+  source = "github.com/peteroneilljr/terraform-teleport-node"
+
+  create = local.teleport.gcp
+
+  cloud  = "GCP"
+  prefix = "pon"
+
+  teleport_proxy_address = var.teleport_proxy_address
+  teleport_version       = var.teleport_version
+  teleport_ssh_labels = {
+    "type" = "agent"
+  }
+  teleport_agent_roles = ["App"]
+
+  agent_nodename = "gcp-agent"
+
+  gcp_service_account_email = google_service_account.teleport_cli.email
+  gcp_machine_type          = "e2-micro"
+  gcp_region                = var.gcp_region
+  teleport_gcp_apps = {
+    "google-cloud-cli" = {
+      "labels" = {
+        "cloud" = "gcp"
+      }
+    }
   }
 }
 ```
 
-## Authenticate Providers
+## Node Setup
 
-### Log into Teleport Cluster
+```hcl
+module "dev_central" {
+  source = "github.com/peteroneilljr/terraform-teleport-node"
 
-```sh
-tsh login --proxy=example.teleport.sh:443 --auth=okta
+  create = local.teleport.ssh
+
+  cloud = "AWS"
+
+  aws_vpc_id            = module.vpc.vpc_id
+  aws_security_group_id = module.vpc.default_security_group_id
+  aws_subnet_id         = module.vpc.private_subnets[0]
+
+  agent_nodename = "dev-central"
+
+  teleport_ssh_labels    = { "env" = "dev" }
+  teleport_proxy_address = var.teleport_proxy_address
+  teleport_version       = var.teleport_version
+  teleport_agent_roles   = []
+
+  aws_key_pair = aws_key_pair.peter.id
+
+}
 ```
 
-### Create identity file
 
-```sh
-tctl auth sign \
- --user=peter.oneill@goteleport.com --format=file \
- --out=/Users/home/identity \
- --ttl 10h
- ```
+## Windows Node
 
+```hcl
+module "teleport_rdp" {
+  source = "github.com/peteroneilljr/terraform-teleport-node"
 
-### Create AWS spiffe certificate
+  create = local.teleport.rdp
 
-[spiffe setup](https://goteleport.com/docs/enroll-resources/machine-id/workload-identity/aws-roles-anywhere/#step-24-configure-teleport-rbac)
+  cloud = "AWS"
 
-```sh
-tsh svid issue --output /Users/home/svid \
-  --svid-ttl 10h \
-  /svc/peter-terraform
+  aws_vpc_id            = module.vpc.vpc_id
+  aws_security_group_id = module.vpc.default_security_group_id
+  aws_subnet_id         = module.vpc.private_subnets[0]
+
+  agent_nodename = "win-agent"
+
+  teleport_proxy_address = var.teleport_proxy_address
+  teleport_version       = var.teleport_version
+  teleport_ssh_labels = {
+    "type" = "agent"
+  }
+
+  teleport_agent_roles = ["WindowsDesktop"]
+
+  teleport_windows_hosts = {
+    "development" = {
+      "env"  = "dev"
+      "addr" = local.teleport.rdp ? module.windows_instances["dev"].private_ip : "1.1.1.1"
+    }
+    "production" = {
+      "env"  = "prod"
+      "addr" = local.teleport.rdp ? module.windows_instances["prod"].private_ip : "1.1.1.1"
+    }
+  }
+
+  aws_key_pair = aws_key_pair.peter.id
+
+}
 ```
 
+## RDS Postgres
 
-## Modify cluster auth for roles
+```hcl
+module "rds_teleport" {
+  source = "github.com/peteroneilljr/terraform-teleport-node"
 
-```sh
-tctl edit cluster_auth_preference
+  create = local.teleport.rds
+
+  cloud = "AWS"
+
+  aws_vpc_id            = module.vpc.vpc_id
+  aws_security_group_id = module.vpc.default_security_group_id
+  aws_subnet_id         = module.vpc.private_subnets[0]
+
+  aws_key_pair         = aws_key_pair.peter.id
+  aws_instance_profile = aws_iam_instance_profile.rds_postgresql.name
+
+
+  agent_nodename = "rds-agent"
+
+  teleport_proxy_address = var.teleport_proxy_address
+  teleport_version       = var.teleport_version
+  teleport_ssh_labels = {
+    "type" = "agent"
+  }
+
+  teleport_agent_roles = ["Db"]
+
+  teleport_rds_hosts = local.teleport.rds ? local.rds_hosts : {}
+
+}
+
+locals {
+  rds_hosts = {
+    "db-dev1" = {
+      "env"      = "dev"
+      "endpoint" = module.rds_postgresql.db_instance_endpoint
+      "address"  = module.rds_postgresql.db_instance_address
+      "admin"    = module.rds_postgresql.db_instance_username
+      "users"    = ["developer", "reader"]
+      "database" = module.rds_postgresql.db_instance_name
+      "password" = random_password.rds.result
+    }
+    "db-dev2" = {
+      "env"      = "dev"
+      "endpoint" = module.rds_postgresql.db_instance_endpoint
+      "address"  = module.rds_postgresql.db_instance_address
+      "admin"    = module.rds_postgresql.db_instance_username
+      "users"    = ["developer", "reader"]
+      "database" = module.rds_postgresql.db_instance_name
+      "password" = random_password.rds.result
+    }
+    "db-production" = {
+      "env"      = "prod"
+      "endpoint" = module.rds_postgresql.db_instance_endpoint
+      "address"  = module.rds_postgresql.db_instance_address
+      "admin"    = module.rds_postgresql.db_instance_username
+      "users"    = ["developer", "reader"]
+      "database" = module.rds_postgresql.db_instance_name
+      "password" = random_password.rds.result
+    }
+  }
+}
 ```

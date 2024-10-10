@@ -53,7 +53,7 @@ locals {
 # ---------------------------------------------------------------------------- #
     rds = <<-INSTALL_RDS
       echo "# ---------------------------------------------------------------------------- #"
-      echo "# Configure RDS user for Teleport"
+      echo "# Install postgres on Amazon Linux"
       echo "# ---------------------------------------------------------------------------- #"
 
       dnf install postgresql15.x86_64 -y
@@ -113,6 +113,9 @@ ssh_service:
   commands:
   - name: kernel
     command: ['uname', '-r']
+    period: 1h0m0s
+  - name: "os"
+    command: ["/usr/bin/uname"]
     period: 1h0m0s
 SSH
 # ---------------------------------------------------------------------------- #
@@ -186,6 +189,35 @@ app_service:
       cloud: aws
       env: prod
 AWS
+# ---------------------------------------------------------------------------- #
+    aws = <<-AWS_CONFIG
+app_service:
+  enabled: "yes"
+  apps:
+%{ for name, config in var.teleport_aws_apps ~}
+  - name: ${name}
+    uri: ${config.uri}
+    cloud: AWS
+    labels:
+%{ for key, value in config.labels ~}
+      ${key}: ${value}
+%{ endfor ~}
+%{ endfor ~}
+AWS_CONFIG
+# ---------------------------------------------------------------------------- #
+    gcp = <<-GCP_CONFIG
+app_service:
+  enabled: "yes"
+  apps:
+%{ for name, config in var.teleport_gcp_apps ~}
+  - name: ${name}
+    cloud: GCP
+    labels:
+%{ for key, value in config.labels ~}
+      ${key}: ${value}
+%{ endfor ~}
+%{ endfor ~}
+GCP_CONFIG
 # ---------------------------------------------------------------------------- #
     end = <<-CONFIG_END
 EOF
