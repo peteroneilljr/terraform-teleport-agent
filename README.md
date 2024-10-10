@@ -22,7 +22,7 @@ module "teleport_aws" {
     "type" = "agent"
   }
 
-  aws_key_pair         = aws_key_pair.peter.id
+  aws_key_pair         = aws_key_pair.keyname.id
   aws_instance_profile = aws_iam_instance_profile.console_access.name
 
   agent_nodename = "aws-agent"
@@ -101,7 +101,7 @@ module "dev_central" {
   teleport_version       = var.teleport_version
   teleport_agent_roles   = []
 
-  aws_key_pair = aws_key_pair.peter.id
+  aws_key_pair = aws_key_pair.keyname.id
 
 }
 ```
@@ -142,7 +142,7 @@ module "teleport_rdp" {
     }
   }
 
-  aws_key_pair = aws_key_pair.peter.id
+  aws_key_pair = aws_key_pair.keyname.id
 
 }
 ```
@@ -161,7 +161,7 @@ module "rds_teleport" {
   aws_security_group_id = module.vpc.default_security_group_id
   aws_subnet_id         = module.vpc.private_subnets[0]
 
-  aws_key_pair         = aws_key_pair.peter.id
+  aws_key_pair         = aws_key_pair.keyname.id
   aws_instance_profile = aws_iam_instance_profile.rds_postgresql.name
 
 
