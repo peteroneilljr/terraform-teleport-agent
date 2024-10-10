@@ -22,7 +22,6 @@ resource "teleport_provision_token" "teleport_agent" {
     expires = timeadd(timestamp(), "4h")
 
     labels = {
-      "iac"                 = "tofu"
       "teleport.dev/origin" = "dynamic" 
     }
   }
