@@ -134,11 +134,11 @@ module "teleport_rdp" {
   teleport_windows_hosts = {
     "development" = {
       "env"  = "dev"
-      "addr" = local.teleport.rdp ? module.windows_instances["dev"].private_ip : "1.1.1.1"
+      "addr" = module.windows_instances["dev"].private_ip
     }
     "production" = {
       "env"  = "prod"
-      "addr" = local.teleport.rdp ? module.windows_instances["prod"].private_ip : "1.1.1.1"
+      "addr" = module.windows_instances["prod"].private_ip
     }
   }
 
@@ -175,7 +175,7 @@ module "rds_teleport" {
 
   teleport_agent_roles = ["Db"]
 
-  teleport_rds_hosts = local.teleport.rds ? local.rds_hosts : {}
+  teleport_rds_hosts = local.rds_hosts
 
 }
 
