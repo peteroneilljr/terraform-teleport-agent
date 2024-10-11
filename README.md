@@ -6,7 +6,7 @@
 module "teleport_aws" {
   source = "github.com/peteroneilljr/terraform-teleport-node"
 
-  create = local.teleport.aws
+  create = true
 
   cloud = "AWS"
 
@@ -53,7 +53,7 @@ module "teleport_aws" {
 module "teleport_gcp" {
   source = "github.com/peteroneilljr/terraform-teleport-node"
 
-  create = local.teleport.gcp
+  create = true
 
   cloud  = "GCP"
   prefix = "pon"
@@ -86,7 +86,7 @@ module "teleport_gcp" {
 module "dev_central" {
   source = "github.com/peteroneilljr/terraform-teleport-node"
 
-  create = local.teleport.ssh
+  create = true
 
   cloud = "AWS"
 
@@ -113,7 +113,7 @@ module "dev_central" {
 module "teleport_rdp" {
   source = "github.com/peteroneilljr/terraform-teleport-node"
 
-  create = local.teleport.rdp
+  create = true
 
   cloud = "AWS"
 
@@ -134,11 +134,11 @@ module "teleport_rdp" {
   teleport_windows_hosts = {
     "development" = {
       "env"  = "dev"
-      "addr" = local.teleport.rdp ? module.windows_instances["dev"].private_ip : "1.1.1.1"
+      "addr" = module.windows_instances["dev"].private_ip
     }
     "production" = {
       "env"  = "prod"
-      "addr" = local.teleport.rdp ? module.windows_instances["prod"].private_ip : "1.1.1.1"
+      "addr" = module.windows_instances["prod"].private_ip
     }
   }
 
@@ -153,7 +153,7 @@ module "teleport_rdp" {
 module "rds_teleport" {
   source = "github.com/peteroneilljr/terraform-teleport-node"
 
-  create = local.teleport.rds
+  create = true
 
   cloud = "AWS"
 
@@ -175,7 +175,7 @@ module "rds_teleport" {
 
   teleport_agent_roles = ["Db"]
 
-  teleport_rds_hosts = local.teleport.rds ? local.rds_hosts : {}
+  teleport_rds_hosts = local.rds_hosts
 
 }
 
