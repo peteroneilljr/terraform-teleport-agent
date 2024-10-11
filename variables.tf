@@ -66,7 +66,7 @@ variable "teleport_ssh_labels" {
   type        = map(string)
   description = "Teleport ssh labels"
   default     = {
-    "iac" = "tofu"
+    "createdBy" = "IAC"
   }
 }
 # ---------------------------------------------------------------------------- #
