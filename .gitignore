@@ -46,3 +46,4 @@ Resources/plan
 identity
 svid
 modules/terraform-teleport-agent-v2/configs/
+/configs
