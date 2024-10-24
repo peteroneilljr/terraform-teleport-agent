@@ -58,6 +58,12 @@ variable "teleport_version" {
   type        = string
   description = "Version of Teleport to install on each agent"
 }
+variable "teleport_enhanced_recording" {
+  # https://goteleport.com/docs/enroll-resources/server-access/guides/bpf-session-recording/
+  type        = bool
+  default     = false
+  description = "Enables enhanced recording on the Teleport Agent"
+}
 variable "teleport_agent_roles" {
   type        = list(string)
   description = "Roles to enable on Teleport Agent, Node is already added by default"

@@ -109,7 +109,7 @@ ssh_service:
     ${key}: ${value}
 %{ endfor ~}
   enhanced_recording:
-    enabled: true
+    enabled: ${var.teleport_enhanced_recording}
   commands:
   - name: kernel
     command: ['uname', '-r']
