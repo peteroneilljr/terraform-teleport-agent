@@ -66,7 +66,7 @@ variable "teleport_ssh_labels" {
   type        = map(string)
   description = "Teleport ssh labels"
   default     = {
-    "iac" = "tofu"
+    "createdBy" = "IAC"
   }
 }
 # ---------------------------------------------------------------------------- #
@@ -79,17 +79,17 @@ variable "teleport_discovery" {
 }
 variable "teleport_discovery_tags" {
   type        = map(string)
-  description = "Auto discovery tags to find ec2 instances."
+  description = "EC2 Instances with these discovery tags will be auto-enrolled in Teleport."
   default = {}
 }
 variable "teleport_discovery_token" {
   type        = string
-  description = "Discovery token used for nodes to self register"
+  description = "Long lived token used for nodes to self register"
   default = ""
 }
 variable "teleport_discovery_ssm_install" {
   type        = string
-  description = "Discovery token used for nodes to self register"
+  description = "SSM document namedd container self registration script"
   default = ""
 }
 # ---------------------------------------------------------------------------- #

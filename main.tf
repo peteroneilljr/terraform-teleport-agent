@@ -38,21 +38,21 @@ resource "local_file" "teleport_config" {
   filename = "${path.module}/configs/${var.agent_nodename}-teleport.conf"
 
   content  = <<-EOF
-  ${local.commands.shell}
-  ${local.commands.usershell}
-  ${local.commands.token}
-  ${local.commands.hostname}
-  ${local.install.teleport}
+  ${ local.commands.shell}
+  ${ local.commands.usershell}
+  ${ local.commands.token}
+  ${ local.commands.hostname}
+  ${ local.install.teleport}
   ${ length(var.teleport_rds_hosts) > 0 ? local.install.rds : "" }
-  ${local.resources.start}
-  ${local.resources.ssh}
+  ${ local.resources.start}
+  ${ local.resources.ssh}
   ${ var.teleport_discovery ? local.resources.discovery : ""}
   ${ length(var.teleport_rds_hosts) > 0 ? local.resources.rds : ""}
   ${ length(var.teleport_windows_hosts) > 0 ? local.resources.rdp : ""}
   ${ length(var.teleport_aws_apps) > 0 ? local.resources.aws : ""}
   ${ length(var.teleport_gcp_apps) > 0 ? local.resources.gcp : ""}
-  ${local.resources.proxy}
-  ${local.resources.end}
-  ${local.commands.systemctl}
+  ${ local.resources.proxy}
+  ${ local.resources.end}
+  ${ local.commands.systemctl}
   EOF
 }
