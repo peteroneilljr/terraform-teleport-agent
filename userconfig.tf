@@ -58,24 +58,6 @@ locals {
 
       dnf install postgresql15.x86_64 -y
 
-      %{ for name, host in var.teleport_rds_hosts ~}
-
-      cat << EOF > ./create_${name}.sql
-      %{ for user in host.users }
-      CREATE USER ${user};
-      GRANT rds_iam TO ${user};
-      %{ endfor }
-      EOF
-
-      export PGHOST='${host.address}'
-      export PGPORT='5432'
-      export PGUSER='${host.admin}'
-      export PGPASSWORD='${host.password}'
-      export PGDATABASE='${host.database}'
-
-      psql < create_${name}.sql
-
-      %{ endfor ~}
       INSTALL_RDS
   }
 # ---------------------------------------------------------------------------- #

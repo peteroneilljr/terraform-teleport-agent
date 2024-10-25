@@ -28,7 +28,10 @@ variable "aws_ami_ubuntu" {
   description = "Use Ubuntu AMI for Agent"
   default     = false
 }
-
+variable "aws_tags" {
+  description = "description"
+  default = {}
+}
 # ---------------------------------------------------------------------------- #
 # Agent settings
 # ---------------------------------------------------------------------------- #
@@ -139,13 +142,8 @@ variable "teleport_gcp_apps" {
 
 variable "teleport_rds_hosts" {
   type = map(object({
-      env      = string
       endpoint = string
-      address  = string
-      admin    = string
-      users    = list(string)
-      password = string
-      database = string
+      env      = string
   }))
   description = "RDS connects to add to teleprot"
   default = {}

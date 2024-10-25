@@ -15,6 +15,8 @@ resource "aws_instance" "teleport_agent" {
 
   user_data = local_file.teleport_config[0].content
 
+  tags = var.aws_tags
+
   metadata_options {
     http_endpoint = "enabled"
     http_tokens   = "required"
