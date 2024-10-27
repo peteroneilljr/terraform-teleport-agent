@@ -1,12 +1,11 @@
 locals {
   ami = {
-    ubuntu = try(data.aws_ami.ubuntu[0].id, null)
-    amzn_linux = try(data.aws_ami.amzn_linux[0].id, null)
+    ubuntu     = data.aws_ami.ubuntu.id
+    amzn_linux = data.aws_ami.amzn_linux.id
   }
 }
 
 data "aws_ami" "amzn_linux" {
-  count = var.create ? 1:0
   most_recent = true
   owners      = ["amazon"]
 
@@ -27,7 +26,6 @@ data "aws_ami" "amzn_linux" {
 }
 
 data "aws_ami" "ubuntu" {
-  count = var.create ? 1:0
   owners      = ["099720109477"] # Canonical
   most_recent = true
   filter {
