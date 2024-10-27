@@ -2,15 +2,15 @@
 # AWS settings
 # ---------------------------------------------------------------------------- #
 variable "aws_vpc_id" {
-  type = string
+  type    = string
   default = null
 }
 variable "aws_security_group_id" {
-  type = string
+  type    = string
   default = ""
 }
 variable "aws_subnet_id" {
-  type = string
+  type    = string
   default = null
 }
 variable "aws_key_pair" {
@@ -30,16 +30,16 @@ variable "aws_ami_ubuntu" {
 }
 variable "aws_tags" {
   description = "description"
-  default = {}
+  default     = {}
 }
 # ---------------------------------------------------------------------------- #
 # Agent settings
 # ---------------------------------------------------------------------------- #
-variable "agent_nodename" {
+variable "teleport_nodename" {
   type        = string
   description = "Name to appear in Teleport resource manager"
 }
-variable "agent_instance_size" {
+variable "aws_instance_size" {
   type        = string
   description = "AWS instance type to use"
   default     = "t3.small"
@@ -55,11 +55,17 @@ variable "teleport_proxy_address" {
 variable "teleport_cdn_address" {
   type        = string
   description = "Download script for Teleport"
-  default     = "https://cdn.teleport.dev/install-v16.2.0.sh"
+  default     = "https://cdn.teleport.dev/install-v16.4.2.sh"
 }
 variable "teleport_version" {
   type        = string
   description = "Version of Teleport to install on each agent"
+  default     = "16.4.2"
+}
+variable "teleport_edition" {
+  type        = string
+  description = "Edition of Teleport, cloud, enterprise or oss"
+  default     = "cloud"
 }
 variable "teleport_enhanced_recording" {
   # https://goteleport.com/docs/enroll-resources/server-access/guides/bpf-session-recording/
@@ -67,103 +73,83 @@ variable "teleport_enhanced_recording" {
   default     = false
   description = "Enables enhanced recording on the Teleport Agent"
 }
+variable "teleport_ssh_enable" {
+  type        = bool
+  default     = true
+  description = "Register Agent as an SSH resource"
+}
 variable "teleport_agent_roles" {
   type        = list(string)
-  description = "Roles to enable on Teleport Agent, Node is already added by default"
+  default     = ["Node"]
+  description = "Roles to enable on Teleport Agent, Node but be include for SSH"
 }
 variable "teleport_ssh_labels" {
   type        = map(string)
   description = "Teleport ssh labels"
-  default     = {
+  default = {
     "createdBy" = "IAC"
   }
 }
 # ---------------------------------------------------------------------------- #
 # Discovery
 # ---------------------------------------------------------------------------- #
-variable "teleport_discovery" {
-  type        = bool
-  description = "Enable Discovery Type for Token"
-  default     = false
+variable "teleport_discovery_groups" {
+  type = map(object({
+    type              = string
+    region            = string
+    token_name        = string
+    ssm_document_name = string
+    tags              = map(string)
+  }))
+  description = "Discovery groups to add"
+  default     = {}
 }
-variable "teleport_discovery_tags" {
-  type        = map(string)
-  description = "EC2 Instances with these discovery tags will be auto-enrolled in Teleport."
-  default = {}
-}
-variable "teleport_discovery_token" {
-  type        = string
-  description = "Long lived token used for nodes to self register"
-  default = ""
-}
-variable "teleport_discovery_ssm_install" {
-  type        = string
-  description = "SSM document namedd container self registration script"
-  default = ""
-}
+
 # ---------------------------------------------------------------------------- #
 # Windows
 # ---------------------------------------------------------------------------- #
 
 variable "teleport_windows_hosts" {
   type = map(object({
-      env  = string
-      addr = string
+    addr   = string
+    labels = map(string)
   }))
   description = "Windows hosts to add"
-  default = {}
+  default     = {}
 }
 # ---------------------------------------------------------------------------- #
-# AWS
+# Apps
 # ---------------------------------------------------------------------------- #
 
-variable "teleport_aws_apps" {
+variable "teleport_apps" {
   type = map(object({
-      uri  = string
-      labels = map(string)
+    uri    = optional(string, "")
+    cloud  = optional(string, "")
+    labels = optional(map(string), {"managed_by" = "iac"})
   }))
-  description = "AWS Appps to add"
-  default = {}
+  description = "Apps to add"
+  default     = {}
 }
+
 # ---------------------------------------------------------------------------- #
-# GCP
+# DB
 # ---------------------------------------------------------------------------- #
 
-variable "teleport_gcp_apps" {
+variable "teleport_databases" {
   type = map(object({
-      labels    = map(string)
+    description = string
+    protocol    = string
+    uri         = string
+    labels      = map(string)
   }))
-  description = "AWS Appps to add"
-  default = {}
+  description = "DB instances to add to add to teleprot"
+  default     = {}
 }
-# ---------------------------------------------------------------------------- #
-# RDS
-# ---------------------------------------------------------------------------- #
 
-variable "teleport_rds_hosts" {
-  type = map(object({
-      endpoint = string
-      env      = string
-  }))
-  description = "RDS connects to add to teleprot"
-  default = {}
-}
 # ---------------------------------------------------------------------------- #
 # Module settings
 # ---------------------------------------------------------------------------- #
-variable "create" {
-  type        = bool
-  description = "Boolean to disable module resources"
-  default     = true
-}
-variable "cloud" {
-  type        = string
-  description = "Cloud to deploy resources into"
-  validation {
-    condition     = contains(["AWS", "GCP"], var.cloud)
-    error_message = "Valid values: AWS, GCP."
-  } 
-}
+
 variable "prefix" {
   type        = string
   description = "String prefix to add to names"
@@ -173,22 +159,4 @@ variable "public_ip" {
   type        = bool
   description = "Assign public IP to this Agent's node"
   default     = false
-}
-# ---------------------------------------------------------------------------- #
-# GCP
-# ---------------------------------------------------------------------------- #
-variable "gcp_service_account_email" {
-  type        = string
-  description = "Service Account with ability to impersonate other service accounts"
-  default = ""
-}
-variable "gcp_machine_type" {
-  type        = string
-  description = "Machine type for GCP VM Instance"
-  default = "e2-micro"
-}
-variable "gcp_region" {
-  type        = string
-  description = "Region to deploy VM instance, zone is always -a"
-  default = "us-central1"
 }
