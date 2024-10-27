@@ -1,0 +1,24 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+write_files:
+- path: /etc/teleport.token
+  content: |
+    ${teleport_auth_token}  
+- path: /etc/teleport.yaml
+  content: |
+    version: v3
+    teleport:
+      proxy_server: ${teleport_proxy_address}:443
+      nodename: ${teleport_nodename}
+      auth_token: /etc/teleport.token
+      data_dir: /var/lib/teleport
+      log:
+        output: stderr
+        severity: INFO
+        format:
+          output: json
+    proxy_service:
+      enabled: false
+    auth_service:
+      enabled: false

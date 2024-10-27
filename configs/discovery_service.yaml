@@ -1,0 +1,20 @@
+- path: /etc/teleport.yaml
+  append: true
+  content: |
+    discovery_service:
+      enabled: "yes"
+      discovery_group: "aws"
+      aws:
+    %{~ for name, discovery in teleport_discovery_groups ~}
+      - types: ["${discovery.type}"]
+        regions: ["${discovery.region}"]
+        install:
+          join_params:
+            token_name: ${discovery.token_name}
+        ssm:
+          document_name: ${discovery.ssm_document_name}
+        tags: # Look for EC2 Instances with these tags
+    %{~ for key, value in discovery.tags ~}
+          "${key}": "${value}"
+    %{~ endfor ~}
+    %{~ endfor ~}

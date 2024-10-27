@@ -1,0 +1,15 @@
+- path: /etc/teleport.yaml
+  append: true
+  content: |
+    app_service:
+      enabled: true
+      apps:
+    %{~ for name, app in teleport_apps ~}
+      - name: ${name}
+        uri: "${ app.uri }"
+        cloud: ${ app.cloud }
+        labels:
+    %{~ for key, value in app.labels ~}
+          ${key}: ${value}
+    %{~ endfor ~}
+    %{~ endfor ~}

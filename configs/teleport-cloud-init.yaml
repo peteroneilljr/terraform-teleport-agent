@@ -1,0 +1,8 @@
+#cloud-config
+# packages:
+# - postgresql15
+runcmd:
+- hostname ${teleport_nodename}
+- curl ${teleport_cdn_address} | bash -s "${teleport_version}" "${teleport_edition}"
+- systemctl enable teleport
+- systemctl restart teleport

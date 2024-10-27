@@ -1,0 +1,15 @@
+- path: /etc/teleport.yaml
+  append: true
+  content: |
+    windows_desktop_service:
+      enabled: yes
+      static_hosts:
+    %{~ for name, host in teleport_windows_hosts ~}
+      - name: ${name}
+        addr: ${host.addr}
+        ad: false
+        labels:
+    %{~ for key, value in host.labels ~}
+          ${key}: ${value}
+    %{~ endfor ~}
+    %{~ endfor ~}

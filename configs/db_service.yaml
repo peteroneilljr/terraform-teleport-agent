@@ -1,0 +1,16 @@
+- path: /etc/teleport.yaml
+  append: true
+  content: |
+    db_service:
+      enabled: "yes"
+      databases:
+    %{~ for name, host in teleport_databases ~}
+      - name: ${name}
+        description: "${host.description}"
+        protocol: "${host.protocol}"
+        uri: "${host.uri}"
+        static_labels:
+    %{~ for key, value in host.labels ~}
+          ${key}: ${value}
+    %{~ endfor ~}
+    %{~ endfor ~}

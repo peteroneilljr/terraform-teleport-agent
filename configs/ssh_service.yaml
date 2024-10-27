@@ -1,0 +1,16 @@
+- path: /etc/teleport.yaml
+  append: true
+  content: |
+    ssh_service:
+      enabled: true
+      labels:
+    %{~ for key, value in teleport_ssh_labels ~}
+        ${key}: ${value}
+    %{~ endfor ~}
+      commands:
+      - name: kernel
+        command: ['uname', '-r']
+        period: 1h0m0s
+      - name: "os"
+        command: ["/usr/bin/uname"]
+        period: 1h0m0s
