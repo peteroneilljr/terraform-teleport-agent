@@ -4,7 +4,7 @@
     ssh_service:
       enabled: true
       labels:
-    %{~ for key, value in teleport_ssh_labels ~}
+    %{~ for key, value in teleport_node_labels ~}
         ${key}: ${value}
     %{~ endfor ~}
       commands:

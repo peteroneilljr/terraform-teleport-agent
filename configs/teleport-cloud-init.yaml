@@ -1,8 +1,10 @@
 #cloud-config
-# packages:
-# - postgresql15
 runcmd:
-- hostname ${teleport_nodename}
+%{ for package in teleport_agent_packages ~}
+- echo "***Installing ${package}***""
+- dnf install ${package} -y
+%{~ endfor }
+- hostname ${teleport_node_name}
 - curl ${teleport_cdn_address} | bash -s "${teleport_version}" "${teleport_edition}"
 - systemctl enable teleport
 - systemctl restart teleport

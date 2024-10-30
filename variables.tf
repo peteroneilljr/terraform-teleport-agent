@@ -35,7 +35,7 @@ variable "aws_tags" {
 # ---------------------------------------------------------------------------- #
 # Agent settings
 # ---------------------------------------------------------------------------- #
-variable "teleport_nodename" {
+variable "teleport_node_name" {
   type        = string
   description = "Name to appear in Teleport resource manager"
 }
@@ -73,7 +73,7 @@ variable "teleport_enhanced_recording" {
   default     = false
   description = "Enables enhanced recording on the Teleport Agent"
 }
-variable "teleport_ssh_enable" {
+variable "teleport_node_enable" {
   type        = bool
   default     = true
   description = "Register Agent as an SSH resource"
@@ -83,9 +83,14 @@ variable "teleport_agent_roles" {
   default     = ["Node"]
   description = "Roles to enable on Teleport Agent, Node but be include for SSH"
 }
-variable "teleport_ssh_labels" {
+variable "teleport_agent_packages" {
+  type        = list(string)
+  default     = []
+  description = "Linux packages to install on Teleport Agent, e.g. postgresql15"
+}
+variable "teleport_node_labels" {
   type        = map(string)
-  description = "Teleport ssh labels"
+  description = "Teleport labels for the Node"
   default = {
     "createdBy" = "IAC"
   }

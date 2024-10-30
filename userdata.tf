@@ -13,10 +13,11 @@ data "cloudinit_config" "teleport_cluster_config" {
     content      = templatefile(
         "${path.module}/configs/teleport-cloud-init.yaml",
         {
-          teleport_nodename    = var.teleport_nodename
+          teleport_node_name   = var.teleport_node_name
           teleport_cdn_address = var.teleport_cdn_address
           teleport_version     = var.teleport_version
           teleport_edition     = var.teleport_edition
+          teleport_agent_packages = var.teleport_agent_packages
         }
       )
   }
@@ -26,16 +27,16 @@ locals {
   teleport_config =  templatefile(
           "${path.module}/configs/teleport-config.yaml",
           {
-            teleport_proxy_address   = var.teleport_proxy_address
-            teleport_nodename   = var.teleport_nodename
-            teleport_auth_token = teleport_provision_token.teleport_agent.metadata.name
+            teleport_proxy_address = var.teleport_proxy_address
+            teleport_node_name     = var.teleport_node_name
+            teleport_auth_token    = teleport_provision_token.teleport_agent.metadata.name
           }
         )
 
-  ssh_service =  var.teleport_ssh_enable ? templatefile(
+  ssh_service =  var.teleport_node_enable ? templatefile(
         "${path.module}/configs/ssh_service.yaml",
         {
-          teleport_ssh_labels = var.teleport_ssh_labels
+          teleport_node_labels = var.teleport_node_labels
         }
       ) : ""
 
