@@ -81,7 +81,7 @@ variable "teleport_node_enable" {
 variable "teleport_agent_roles" {
   type        = list(string)
   default     = ["Node"]
-  description = "Roles to enable on Teleport Agent, Node but be include for SSH"
+  description = "Roles to enable on Teleport Agent, Node must be included for SSH"
 }
 variable "teleport_agent_packages" {
   type        = list(string)
