@@ -130,7 +130,7 @@ variable "teleport_apps" {
   type = map(object({
     uri    = optional(string, "")
     cloud  = optional(string, "")
-    labels = optional(map(string), {"managed_by" = "iac"})
+    labels = optional(map(string), { "managed_by" = "iac" })
   }))
   description = "Apps to add"
   default     = {}
