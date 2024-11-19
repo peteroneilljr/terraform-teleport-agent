@@ -32,13 +32,6 @@ variable "aws_tags" {
   description = "description"
   default     = {}
 }
-# ---------------------------------------------------------------------------- #
-# Agent settings
-# ---------------------------------------------------------------------------- #
-variable "teleport_node_name" {
-  type        = string
-  description = "Name to appear in Teleport resource manager"
-}
 variable "aws_instance_size" {
   type        = string
   description = "AWS instance type to use"
@@ -72,6 +65,10 @@ variable "teleport_enhanced_recording" {
   type        = bool
   default     = false
   description = "Enables enhanced recording on the Teleport Agent"
+}
+variable "teleport_node_name" {
+  type        = string
+  description = "Name to appear in Teleport resource manager"
 }
 variable "teleport_node_enable" {
   type        = bool
