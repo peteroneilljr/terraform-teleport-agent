@@ -6,7 +6,7 @@ data "cloudinit_config" "teleport_cluster_config" {
 
   part {
     content_type = "text/cloud-config"
-    content      = local.teleport-config-yaml
+    content      = var.teleport_config_override != "" ? local.teleport_config_override : local.teleport-config-yaml
   }
   part {
     content_type = "text/cloud-config"
@@ -24,6 +24,14 @@ data "cloudinit_config" "teleport_cluster_config" {
 }
 
 locals {
+  teleport_config_override = templatefile(
+    "${path.module}/configs/teleport-config-override.yaml",
+    {
+      teleport_config_override = var.teleport_config_override
+      teleport_auth_token      = teleport_provision_token.teleport_agent.metadata.name
+    }
+  )
+
   teleport_config = templatefile(
     "${path.module}/configs/teleport-config.yaml",
     {

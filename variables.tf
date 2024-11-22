@@ -48,12 +48,12 @@ variable "teleport_proxy_address" {
 variable "teleport_cdn_address" {
   type        = string
   description = "Download script for Teleport"
-  default     = "https://cdn.teleport.dev/install-v16.4.2.sh"
+  default     = "https://cdn.teleport.dev/install-v16.4.7.sh"
 }
 variable "teleport_version" {
   type        = string
   description = "Version of Teleport to install on each agent"
-  default     = "16.4.2"
+  default     = "16.4.7"
 }
 variable "teleport_edition" {
   type        = string
@@ -69,6 +69,11 @@ variable "teleport_enhanced_recording" {
 variable "teleport_node_name" {
   type        = string
   description = "Name to appear in Teleport resource manager"
+}
+variable "teleport_config_override" {
+  type        = string
+  description = "Override creation of the teleport config"
+  default     = ""
 }
 variable "teleport_node_enable" {
   type        = bool
@@ -147,6 +152,7 @@ variable "teleport_databases" {
   description = "DB instances to add to add to teleprot"
   default     = {}
 }
+
 
 # ---------------------------------------------------------------------------- #
 # Module settings

@@ -1,0 +1,8 @@
+#cloud-config
+write_files:
+- path: /etc/teleport.token
+  content: |
+    ${teleport_auth_token}  
+- path: /etc/teleport.yaml
+  content: |
+${teleport_config_override}
