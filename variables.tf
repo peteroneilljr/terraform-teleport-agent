@@ -23,11 +23,6 @@ variable "aws_instance_profile" {
   description = "Name of EC2 Instance profile"
   default     = null
 }
-variable "aws_ami_ubuntu" {
-  type        = bool
-  description = "Use Ubuntu AMI for Agent"
-  default     = false
-}
 variable "aws_tags" {
   description = "description"
   default     = {}
@@ -65,6 +60,12 @@ variable "teleport_enhanced_recording" {
   type        = bool
   default     = false
   description = "Enables enhanced recording on the Teleport Agent"
+}
+variable "teleport_fips" {
+  # https://goteleport.com/docs/admin-guides/access-controls/compliance-frameworks/fedramp/
+  type        = bool
+  default     = false
+  description = "Installs FIPS binary"
 }
 variable "teleport_node_name" {
   type        = string

@@ -1,10 +1,20 @@
 #cloud-config
 runcmd:
+- hostname ${teleport_node_name}
 %{ for package in teleport_agent_packages ~}
 - echo "***Installing ${package}***""
 - dnf install ${package} -y
-%{~ endfor }
-- hostname ${teleport_node_name}
+%{ endfor ~}
+%{ if teleport_fips ~}
+- dnf install shasum -y
+- curl https://cdn.teleport.dev/teleport-ent-v${teleport_version}-linux-${teleport_system_arch}-fips-bin.tar.gz.sha256
+- curl -O https://cdn.teleport.dev/teleport-ent-v${teleport_version}-linux-${teleport_system_arch}-fips-bin.tar.gz
+- shasum -a 256 teleport-ent-v${teleport_version}-linux-${teleport_system_arch}-fips-bin.tar.gz
+- tar -xvf teleport-ent-v${teleport_version}-linux-${teleport_system_arch}-fips-bin.tar.gz
+- cd teleport-ent
+- ./install
+%{ else ~}
 - curl ${teleport_cdn_address} | bash -s "${teleport_version}" "${teleport_edition}"
+%{ endif ~}
 - systemctl enable teleport
 - systemctl restart teleport

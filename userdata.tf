@@ -18,6 +18,8 @@ data "cloudinit_config" "teleport_cluster_config" {
         teleport_version        = var.teleport_version
         teleport_edition        = var.teleport_edition
         teleport_agent_packages = var.teleport_agent_packages
+        teleport_fips           = var.teleport_fips
+        teleport_system_arch    = "amd64"
       }
     )
   }
