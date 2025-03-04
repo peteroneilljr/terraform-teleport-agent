@@ -14,7 +14,7 @@ runcmd:
 - cd teleport-ent
 - ./install
 %{ else ~}
-- curl ${teleport_cdn_address} | bash -s "${teleport_version}" "${teleport_edition}"
+- curl https://cdn.teleport.dev/install.sh | bash -s "${teleport_version}"
 %{ endif ~}
 - systemctl enable teleport
 - systemctl restart teleport
