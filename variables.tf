@@ -40,21 +40,6 @@ variable "teleport_proxy_address" {
   type        = string
   description = "Host and HTTPS port of the Teleport Proxy Service"
 }
-variable "teleport_cdn_address" {
-  type        = string
-  description = "Download script for Teleport"
-  default     = "https://cdn.teleport.dev/install-v16.4.7.sh"
-}
-variable "teleport_version" {
-  type        = string
-  description = "Version of Teleport to install on each agent"
-  default     = "16.4.7"
-}
-variable "teleport_edition" {
-  type        = string
-  description = "Edition of Teleport, cloud, enterprise or oss"
-  default     = "cloud"
-}
 variable "teleport_enhanced_recording" {
   # https://goteleport.com/docs/enroll-resources/server-access/guides/bpf-session-recording/
   type        = bool
@@ -149,6 +134,7 @@ variable "teleport_databases" {
     protocol    = string
     uri         = string
     labels      = map(string)
+    admin_user  = map(string)
   }))
   description = "DB instances to add to add to teleprot"
   default     = {}

@@ -14,9 +14,6 @@ data "cloudinit_config" "teleport_cluster_config" {
       "${path.module}/configs/teleport-cloud-init.yaml",
       {
         teleport_node_name      = var.teleport_node_name
-        teleport_cdn_address    = var.teleport_cdn_address
-        teleport_version        = var.teleport_version
-        teleport_edition        = var.teleport_edition
         teleport_agent_packages = var.teleport_agent_packages
         teleport_fips           = var.teleport_fips
         teleport_system_arch    = "amd64"

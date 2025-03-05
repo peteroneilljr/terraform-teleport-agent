@@ -12,5 +12,9 @@
         static_labels:
     %{~ for key, value in host.labels ~}
           ${key}: ${value}
+        admin_user:
+    %{~ for key, value in host.admin_user ~}
+          ${key}: ${value}
+    %{~ endfor ~}
     %{~ endfor ~}
     %{~ endfor ~}
