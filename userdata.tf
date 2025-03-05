@@ -13,6 +13,7 @@ data "cloudinit_config" "teleport_cluster_config" {
     content = templatefile(
       "${path.module}/configs/teleport-cloud-init.yaml",
       {
+        teleport_version        = var.teleport_version
         teleport_node_name      = var.teleport_node_name
         teleport_agent_packages = var.teleport_agent_packages
         teleport_fips           = var.teleport_fips
